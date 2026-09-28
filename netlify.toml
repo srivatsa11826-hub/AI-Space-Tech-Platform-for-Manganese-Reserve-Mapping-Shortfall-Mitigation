@@ -1,0 +1,11 @@
+# Netlify Configuration File for MOIL Manganese AI Platform
+[build]
+  base = "frontend"
+  publish = "dist"
+  command = "npm run build"
+
+# Single Page Application SPA Fallback Redirect Rule
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
