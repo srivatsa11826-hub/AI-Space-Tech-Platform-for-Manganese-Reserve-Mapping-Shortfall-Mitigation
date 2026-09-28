@@ -5,7 +5,19 @@ import pandas as pd
 from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "manganese_operations.db")
+# Support environment variable override and Vercel read-only filesystem fallback
+default_db_path = os.path.join(os.path.dirname(__file__), "manganese_operations.db")
+if os.environ.get("VERCEL") or not os.access(os.path.dirname(default_db_path) or ".", os.W_OK):
+    tmp_path = os.path.join("/tmp", "manganese_operations.db")
+    if os.path.exists(default_db_path) and not os.path.exists(tmp_path):
+        try:
+            import shutil
+            shutil.copy2(default_db_path, tmp_path)
+        except Exception:
+            pass
+    DB_PATH = os.environ.get("DB_PATH", tmp_path)
+else:
+    DB_PATH = os.environ.get("DB_PATH", default_db_path)
 
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
